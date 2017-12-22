@@ -1,0 +1,184 @@
+group 'com.onexip.gradle'
+version '0.0.14'
+
+wrapper.gradleVersion = '4.3.0'
+
+buildscript {
+    dependencies
+            {
+               // classpath 'com.onexip.gradle:java-native-gradle-plugin:0.0.14' //varies for JitPack
+            }
+
+    repositories {
+        mavenLocal()
+    }
+
+}
+
+
+/*
+apply plugin: 'JavaNativePlugin'
+
+windows {
+    isToolDirectory = "/Users/tb/Dropbox (onexip)/Team-Ordner-onexip/development/internal/UltraMixer/UltraMixer6/_tools/ISTool"
+    issFile = "/Users/tb/Dropbox (onexip)/Team-Ordner-onexip/development/internal/UltraMixer/UltraMixer6/conf/windows/setup-UM-win-64bit-tpl.iss"
+    issProperties = [
+            "\\{ArchitecturesAllowed\\}": "x64",
+            "\\{arch\\}"                : "64",
+            "\\{app.version.1\\}"       : "1",
+            "\\{app.version.3\\}"       : "1.0.0",
+            "\\{app.build\\}"           : "alpha7",
+            "\\{output.dir\\}"           : file(".").absolutePath
+    ]
+}
+*/
+
+
+apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+}
+
+
+dependencies {
+    compile "commons-io:commons-io:2.6"
+}
+
+
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+
+
+apply plugin: 'java-gradle-plugin'
+
+
+gradlePlugin {
+    plugins {
+        JavaNativePlugin {
+            id = 'JavaNativeGradlePlugin'
+            implementationClass = 'com.onexip.gradle.javanativeplugin.JavaNativePlugin'
+        }
+    }
+}
+
+
+/*
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+
+signing {
+    sign configurations.archives
+}
+
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+*/
+
+/*
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            //repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              //  authentication(userName: ossrhUsername, password: ossrhPassword)
+            //}
+
+            repository(url: "http://mix-software.com:8081/nexus/content/repositories/ultramixer-private") {
+                authentication(userName: UM_NEXUS_DEPLOYMENT_USERNAME, password: UM_NEXUS_DEPLOYMENT_PASSWORD)
+            }
+
+            //snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+              //  authentication(userName: ossrhUsername, password: ossrhPassword)
+            //}
+
+            pom.project {
+                name 'javanativeplugin'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'gradle plugin to create native installers for Windows and Mac'
+                url 'http://www.onexip.com'
+
+                scm {
+                    connection 'scm:git:git@github.com:onexip/java-native-gradle-plugin.git'
+                    developerConnection 'scm:git:https://github.com/onexip/java-native-gradle-plugin.git'
+                    url 'https://github.com/onexip/java-native-gradle-plugin'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'tobiasbley'
+                        name 'Tobias Bley'
+                        email 'info@onexip.com'
+                    }
+                }
+            }
+        }
+    }
+}
+*/
+
+
+
+
+apply plugin: 'maven-publish'
+
+publishing {
+    repositories {
+        maven {
+            url "http://mix-software.com:8081/nexus/content/repositories/ultramixer-private"
+            credentials {
+                username UM_NEXUS_DEPLOYMENT_USERNAME
+                password UM_NEXUS_DEPLOYMENT_PASSWORD
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+
